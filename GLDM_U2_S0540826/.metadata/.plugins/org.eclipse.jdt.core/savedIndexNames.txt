@@ -1,0 +1,1 @@
+INDEX VERSION 1.126+/Applications/ImageJ/plugins/GLDM_U2_S0540826/.metadata/.plugins/org.eclipse.jdt.core
