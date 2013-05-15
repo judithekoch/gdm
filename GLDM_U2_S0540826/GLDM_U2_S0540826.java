@@ -32,7 +32,7 @@ public class GLDM_U2_S0540826 implements PlugIn {
 	
     public static void main(String args[]) {
 		//new ImageJ();
-    	IJ.open("/Applications/ImageJ/plugins/GLDM_U2_S0540826/orchid.jpg");
+    	IJ.open("/Applications/ImageJ/plugins/gdm/GLDM_U2_S0540826/orchid.jpg");
     	//IJ.open("Z:/Pictures/Beispielbilder/orchid.jpg");
 		
 		GLDM_U2_S0540826 pw = new GLDM_U2_S0540826();
@@ -188,12 +188,7 @@ public class GLDM_U2_S0540826 implements PlugIn {
 					double gn = g;
 					double bn = b;
 					
-					//Helligkeit
-					if (brightness != 0){
-						rn = r + brightness;
-						gn = g + brightness;
-						bn = b + brightness;
-					}					
+					
 					
 					//Kontrast
 					if (contrast != 1){
@@ -208,6 +203,11 @@ public class GLDM_U2_S0540826 implements PlugIn {
 					cbn = -0.168736 * rn - 0.331264 * gn + 0.5 * bn;
 					//2. Chrominanzkomponente
 					crn = 0.5 * rn - 0.418688 * gn - 0.081312 * bn;
+					
+					//Helligkeit
+					if (brightness != 0){
+						yn = yn + brightness;
+					}
 					
 					//Saettigung
 					if(saturation != 1){
