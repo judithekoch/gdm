@@ -190,13 +190,13 @@ public class GLDM_U2_S0540826 implements PlugIn {
 					
 					
 					
-					//Kontrast
-					if (contrast != 1){
+					//Kontrast in RGB
+					/*if (contrast != 1){
 						rn = (int)(contrast * (rn - 128) + 128);
 						gn = (int)(contrast * (gn - 128) + 128);
 						bn = (int)(contrast * (bn - 128) + 128);
-					}
-					
+					}*/
+										
 					//RGB --> YCbCr 
 					yn = 0.299 * rn + 0.587 * gn + 0.114 * bn;
 					//1. Chrominanzkomponente
@@ -207,6 +207,11 @@ public class GLDM_U2_S0540826 implements PlugIn {
 					//Helligkeit
 					if (brightness != 0){
 						yn = yn + brightness;
+					}
+					
+					//Kontrast
+					if (contrast != 1){
+						yn = contrast * (yn - 128) + 128;
 					}
 					
 					//Saettigung
