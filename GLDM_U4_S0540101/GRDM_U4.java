@@ -181,11 +181,14 @@ public class GRDM_U4
 					if (methode == 3) // Chroma - Key
 					{
 						
+						if ( rA > 160 && bA < 150 )  pixels_Erg[pos] = pixels_B[pos];
+						else pixels_Erg[pos] = pixels_A[pos];
 						
 
 					}
 
 				}
+			
 
 		}
 
