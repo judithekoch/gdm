@@ -11,7 +11,7 @@ public class GRDM_U4
 		PlugInFilter {
 
 	protected ImagePlus imp;
-	final static String[] choices = { "Wischen", "Weiche Blende", "Chroma Key", "Extra", "Overlay", "Schieb-Blende" };
+	final static String[] choices = { "Wischen", "Weiche Blende", "Chroma Key", "Extra", "Overlay", "Schieb-Blende", "Jalousie" };
 
 	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
@@ -84,6 +84,8 @@ public class GRDM_U4
 			methode = 5;
 		if (s.equals("Schieb-Blende"))
 			methode = 6;
+		if (s.equals("Jalousie"))
+			methode = 7;
 
 		// Arrays fuer die einzelnen Bilder
 		int[] pixels_B;
@@ -96,10 +98,9 @@ public class GRDM_U4
 			pixels_A = (int[]) stack_A.getPixels(z);
 			pixels_Erg = (int[]) stack_Erg.getPixels(z);
 
-
-
 			int pos = 0;
-			for (int y = 0; y < height; y++)
+			for (int y = 0; y < height; y++) {
+
 				for (int x = 0; x < width; x++, pos++) {
 
 					int cA = pixels_A[pos];
@@ -135,31 +136,27 @@ public class GRDM_U4
 					{
 						//int alpha = 70;
 						int r, g, b;
-						
-						if (rA <= 128 )
-							
-						r = rA * rB / 128;
-						
-						else 
-							r = 255 - ( 255 - rA ) * ( 255 - rB ) / 128 ;
-						
-						if (gA <= 128 )
-							
+
+						if (rA <= 128)
+
+							r = rA * rB / 128;
+
+						else
+							r = 255 - (255 - rA) * (255 - rB) / 128;
+
+						if (gA <= 128)
+
 							g = gA * gB / 128;
-						
-						else 
-								g = 255 - ( 255 - gA ) * ( 255 - gB ) / 128 ;
-						
-						if (bA <= 128 )
-							
+
+						else
+							g = 255 - (255 - gA) * (255 - gB) / 128;
+
+						if (bA <= 128)
+
 							b = bA * bB / 128;
-						
-						else 
-								b = 255 - ( 255 - bA ) * ( 255 - bB ) / 128 ;
-								
-						
-						
-						 
+
+						else
+							b = 255 - (255 - bA) * (255 - bB) / 128;
 
 						pixels_Erg[pos] = 0xFF000000 + ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
 					}
@@ -180,16 +177,30 @@ public class GRDM_U4
 
 					if (methode == 3) // Chroma - Key
 					{
-						
-						if ( rA > 160 && bA < 150 )  pixels_Erg[pos] = pixels_B[pos];
-						else pixels_Erg[pos] = pixels_A[pos];
-						
+
+						if (rA > 160 && bA < 150)
+							pixels_Erg[pos] = pixels_B[pos];
+						else
+							pixels_Erg[pos] = pixels_A[pos];
 
 					}
 
-				}
-			
+					if (methode == 7) // Jalousie
+					{
 
+						int distance = ((z - 1) * width / (length - 1));
+
+						int num = 16;
+
+						pixels_Erg[pos] = pixels_B[pos];
+
+						if (y % num < distance / ( num-1 ))
+							pixels_Erg[pos] = pixels_A[pos];
+					}
+
+				}
+
+			}
 		}
 
 		// neues Bild anzeigen
