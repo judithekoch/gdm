@@ -11,7 +11,7 @@ public class GRDM_U4
 		PlugInFilter {
 
 	protected ImagePlus imp;
-	final static String[] choices = { "Wischen", "Weiche Blende", "Chroma Key", "Extra", "Overlay", "Schieb-Blende", "Jalousie" };
+	final static String[] choices = { "Wischen", "Weiche Blende", "Chroma Key", "Extra", "Overlay", "Schieb-Blende", "Jalousie", "Extra" };
 
 	public int setup(String arg, ImagePlus imp) {
 		this.imp = imp;
@@ -86,6 +86,8 @@ public class GRDM_U4
 			methode = 6;
 		if (s.equals("Jalousie"))
 			methode = 7;
+		if (s.equals("Extra"))
+			methode = 8;
 
 		// Arrays fuer die einzelnen Bilder
 		int[] pixels_B;
@@ -196,6 +198,19 @@ public class GRDM_U4
 
 						if (y % num < distance / ( num-1 ))
 							pixels_Erg[pos] = pixels_A[pos];
+					}
+					
+					if (methode == 8 ) // Extra
+					{
+						float xPlusYDividedByZ = ( width + height ) / ((float)length -1 );
+						
+						
+						int b =  (int) Math.ceil((z-1) * xPlusYDividedByZ) ;
+					
+						
+
+						if ( x + y > b ) pixels_Erg[pos] = pixels_B[pos];
+						else pixels_Erg[pos] = pixels_A[pos];
 					}
 
 				}
