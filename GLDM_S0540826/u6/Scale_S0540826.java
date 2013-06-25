@@ -11,11 +11,11 @@ import ij.process.ImageProcessor;
 public class Scale_S0540826 implements PlugInFilter {
 
 	ImagePlus imp;
-	double ratioH = 0;
-	double ratioV = 0;
-	double ratio = 0;
-	double v;
-	double h;
+	float ratioH = 0;
+	float ratioV = 0;
+	float ratio = 0;
+	float v;
+	float h;
 	int countH = 0;
 	int countW = 0;
 
@@ -60,9 +60,6 @@ public class Scale_S0540826 implements PlugInFilter {
 		int width  = ip.getWidth();  // Breite bestimmen
 		int height = ip.getHeight(); // Hoehe bestimmen
 
-		//height_n = height;
-		//width_n  = width;
-
 		ImagePlus neu = NewImage.createRGBImage("Skaliertes Bild",
 				width_n, height_n, 1, NewImage.FILL_BLACK);
 
@@ -72,8 +69,9 @@ public class Scale_S0540826 implements PlugInFilter {
 		int[] pix = (int[])ip.getPixels();
 		int[] pix_n = (int[])ip_n.getPixels();
 
-		ratioH = (double)height_n/(double)height; 
-		ratioV = (double)width_n/(double)width; 
+		// Verhaeltnisse der alten zu den neuen Werten
+		ratioH = (float)height_n/(float)height; 
+		ratioV = (float)width_n/(float)width; 
 		ratio = (ratioH>ratioV) ? ratioH : ratioV;
 
 		// Schleife ueber das neue Bild
@@ -83,7 +81,7 @@ public class Scale_S0540826 implements PlugInFilter {
 				int y = y_n;
 				int x = x_n;
 
-				if (methode == 1){
+				if (methode == 1){ //Kopie
 
 					if (y < height && x < width) {
 						int pos_n = y_n*width_n + x_n;
@@ -93,8 +91,8 @@ public class Scale_S0540826 implements PlugInFilter {
 					}
 				}
 
-				if (methode == 2){
-					if (ratio >= 1 && y < height*ratio && x < width*ratio) {
+				if (methode == 2){ //Pixelwiederholung
+					if (ratio >= 1 && y < height*ratio && x < width*ratio) { //Bereich begrenzen
 						int pos_n = y_n*width_n + x_n;
 						int pos = (int)(y_n/ratio) * width + (int)(x_n/ratio);
 
@@ -102,45 +100,43 @@ public class Scale_S0540826 implements PlugInFilter {
 					}
 				}
 
-				if (methode == 3){
-//					x = (int)ratioV * x_n;
-//					y = (int)ratioH * y_n;
-					
-					if (y < height*ratio && x < width*ratio) {
+				if (methode == 3){	//Interpolation				
+					if (y < height*ratio && x < width*ratio) { //Bereich begrenzen
 						
-						h = (ratioV * x_n) - x;
-						v = (ratioH * y_n) - y;
+						// horizontaler und vertikaler Abstand vom neuen Pixel zu den Alten
+						h = (float)(x_n/ratioV) % 1;
+						v = (float)(y_n/ratioH) % 1;
 						
 						int pos_n = y_n*width_n + x_n;
-						int pos = (int)(y_n/ratio) * width + (int)(x_n/ratio); //y * width + x; 
+						int pos = (int)(y_n/ratio) * width + (int)(x_n/ratio);
 						
 						int A = pix[pos];
-						double rA = (A >> 16) & 0xff;
-						double gA = (A >> 8) & 0xff;
-						double bA = A & 0xff;
+						float rA = (A >> 16) & 0xff;
+						float gA = (A >> 8) & 0xff;
+						float bA = A & 0xff;
 						
 						int B = pix[pos + 1];
-						double rB = (B >> 16) & 0xff;
-						double gB = (B >> 8) & 0xff;
-						double bB = B & 0xff;
+						float rB = (B >> 16) & 0xff;
+						float gB = (B >> 8) & 0xff;
+						float bB = B & 0xff;
 						
 						int C; 
 						if(pos+width+1 < pix.length)
 							C = pix[pos + width];
 						else 
 							C = 0;
-						double rC = (C >> 16) & 0xff;
-						double gC = (C >> 8) & 0xff;
-						double bC = C & 0xff;
+						float rC = (C >> 16) & 0xff;
+						float gC = (C >> 8) & 0xff;
+						float bC = C & 0xff;
 						
 						int D;
 						if(pos+width+1 < pix.length)
 							D = pix[pos + width + 1];
 						else
 							D = 0;
-						double rD = (D >> 16) & 0xff;
-						double gD = (D >> 8) & 0xff;
-						double bD = D & 0xff;
+						float rD = (D >> 16) & 0xff;
+						float gD = (D >> 8) & 0xff;
+						float bD = D & 0xff;
 						
 						int r = (int)(rA*(1-h)*(1-v) + rB*h*(1-v) + rC*(1-h)*v + rD*h*v); 
 						int g = (int)(gA*(1-h)*(1-v) + gB*h*(1-v) + gC*(1-h)*v + gD*h*v); 
@@ -160,14 +156,6 @@ public class Scale_S0540826 implements PlugInFilter {
 							b = 255;
 						
 						pix_n[pos_n] = (0xFF << 24) | (r << 16) | (g << 8) | b;
-						
-//						int pos_n = y_n*width_n + x_n;
-//						int pos = (int)Math.floor(y_n/ratio) * width + (int)Math.floor(x_n/ratio);
-//						h = ratioH*x_n - x;
-//						v = ratioV*y_n - y;
-//
-//						int result = (int)(pix[pos] * (1-h) * (1-v) + pix[pos+1] * h * (1-v) + pix[pos+width] * (1-h) * v + pix[pos+width+1] * h * v);
-//						pix_n[pos_n] = result;
 					}
 				}
 			}
